@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<head>
+</head>
+
+<body>
+  BODY
+</body>
+<script type="module">
+
+  const getImports = () => ({
+    env: {
+      __memory_base: 0,
+      __table_base: 0,
+      memory: new WebAssembly.Memory({ initial: 256 }),
+      table: new WebAssembly.Table({ initial: 0, element: "anyfunc" })
+    }
+  })
+
+  function loadWebAssembly(filename) {
+    return fetch(filename)
+      .then(response => response.arrayBuffer())
+      .then(buffer => WebAssembly.compile(buffer))
+      .then(module => new WebAssembly.Instance(module, getImports()));
+  }
+
+  loadWebAssembly("./build/app.wasm").then(instance => {
+    var exports = instance.exports;
+    debugger;
+    var main = exports._main;
+
+    document.addEventListener('click', () => { main() });
+    const res = main();
+    console.log(res);
+  });
+
+</script>
+
+</html>
